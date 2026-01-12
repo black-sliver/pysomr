@@ -65,9 +65,9 @@ if platform.system() == "Darwin":
         if "-Wl,--gc-sections" in l_args[tool]:
             l_args[tool].remove("-Wl,--gc-sections")
     for tool in libraries:
-        for i, lib in enumerate(l_args[tool]):
+        for i, lib in enumerate(libraries[tool]):
             if lib.startswith(":") and lib.endswith(".so"):
-                l_args[tool][i] = lib[:-3] + ".dylib"
+                libraries[tool][i] = lib[:-3] + ".dylib"
 
 dll_ext = ".dll" if platform.system() == "Windows" else ".dylib" if platform.system() == "Darwin" else ".so"
 
