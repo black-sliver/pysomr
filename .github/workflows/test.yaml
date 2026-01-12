@@ -37,9 +37,7 @@ jobs:
     - name: Set up dotnet
       uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
       with:
-        python-version: ${{ matrix.python.version }}
-          with:
-            dotnet-version: '10'
+        dotnet-version: '10'
     - name: Build
       run: |
         pip wheel .
