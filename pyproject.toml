@@ -1,0 +1,31 @@
+[project]
+name = "pysomr"
+version = "1.48.0a1"
+requires-python = ">=3.10"
+authors = [
+  {name = "black-sliver"},
+]
+description = "Python Wrapper for SoMR API"
+readme = "README.md"
+license = "LGPL-2.1-or-later"
+license-files = ["LICENSE"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Cython",
+]
+
+[build-system]
+requires = ["setuptools", "cython"]
+build-backend = 'setuptools.build_meta'
+
+[tool.setuptools]
+ext-modules = [
+  {name = "pysomr", sources = ["pysomr.pyx"]},
+]
+
+[tool.black]
+line-length = 120
+
+[tool.codespell]
+skip = './.git,./build,./SecretOfManaRandomizer,./*.egg-info'
+ignore-words = ".codespellignore"

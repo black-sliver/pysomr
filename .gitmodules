@@ -1,0 +1,3 @@
+[submodule "SecretOfManaRandomizer"]
+	path = SecretOfManaRandomizer
+	url = https://github.com/black-sliver/SecretOfManaRandomizer.git

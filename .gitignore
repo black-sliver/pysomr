@@ -1,0 +1,29 @@
+# IDE files
+/.idea/
+
+# cache files
+__pycache__/
+*.pyc
+
+# temp files
+*~
+
+# venv
+/.venv/
+/venv/
+
+# cython intermediates
+*.c
+
+# build output
+*.so
+*.dll
+*.pyd
+*.whl
+*.egg-info/
+/build/
+/out/
+
+# SoMR output
+*.smc
+log_*.txt

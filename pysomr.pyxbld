@@ -1,0 +1,19 @@
+# This file is used when doing pyximport
+import os
+
+def make_ext(modname, pyxfilename):
+    import setuptools
+    from distutils.extension import Extension
+    #from setuptools._distutils.extension import Extension
+    #from Cython.Distutils import Extension
+    return Extension(
+        name=modname,
+        sources=[pyxfilename],
+        depends=["SecretOfManaRandomizer/SoMRandomizer.api/c/api.h"],
+        include_dirs=[os.getcwd()],
+        library_dirs=["SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native"],
+        libraries=[":SoMRandomizer.api.so"],
+        language="c",
+        extra_link_args=["-Wl,-rpath,$ORIGIN"],
+        # NOTE: ^ requires you to copy or symlink the SoMRandomizer.api.so into ~/.pyxbld/lib.../
+    )
