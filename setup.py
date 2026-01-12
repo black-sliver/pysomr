@@ -17,6 +17,7 @@
 # - have different compiler options per platform
 # - package an extra file (SoMRandomizer.api.*) into the root of the wheel
 
+import os
 import os.path
 import platform
 import shutil
@@ -141,12 +142,19 @@ class CustomCommand(Command):
         )
         native_lib = f"SoMRandomizer.api{dll_ext}"
         native_lib_src = f"SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native/{native_lib}"
-        print(f"copying {native_lib_src} -> {os.path.curdir}")
+        print(f"copying {native_lib_src} -> {os.path.curdir} ({os.path.getsize(native_lib_src)})")
         shutil.copy(native_lib_src, ".")
+        if dll_ext == ".dll":
+            # also copy importlib. confusingly this is not called .dll.lib, but just .lib
+            import_lib_src = native_lib_src[:-4] + ".lib"
+            print(f"copying {import_lib_src} -> {os.path.curdir} ({os.path.getsize(import_lib_src)})")
+            shutil.copy(import_lib_src, ".")
+
         if self.lib_dir:
             print(f"copying {native_lib} -> {self.lib_dir}")
             self.lib_dir.mkdir(parents=True, exist_ok=True)
             shutil.copy(native_lib, self.lib_dir)
+
         if self.bdist_dir:
             print(f"copying {native_lib} -> {self.bdist_dir}")
             self.bdist_dir.mkdir(parents=True, exist_ok=True)
