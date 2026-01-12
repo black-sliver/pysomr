@@ -20,6 +20,7 @@
 import os.path
 import platform
 import shutil
+import sys
 import typing as t
 from pathlib import Path
 
@@ -72,6 +73,39 @@ if platform.system() == "Darwin":
 dll_ext = ".dll" if platform.system() == "Windows" else ".dylib" if platform.system() == "Darwin" else ".so"
 
 
+def get_dotnet_os():
+    system = platform.system()
+    if system == "Windows":
+        return "win"
+    if system == "Darwin":
+        return "osx"
+    if system == "Linux":
+        libc_ver = platform.libc_ver()
+        if "musl" in libc_ver:
+            return "linux-musl"
+        if "bionic" in libc_ver:
+            return "linux-bionic"
+        return "linux"
+    # TODO: android, ios
+    return "unix"
+
+
+def get_dotnet_arch():
+    # FIXME: there has to be a better way?
+    machine = platform.machine().lower()
+    if machine in ("x86", "i386", "i586", "i686"):
+        return "x86"
+    if machine in ("amd64", "x86_64", "x64"):
+        if sys.maxsize > 2**32:
+            return "x64"
+        return "x86"
+    if machine.startswith("arm64"):
+        return "arm64"
+    if machine.startswith("arm"):
+        return "arm"
+    raise Exception("Unsupported architecture")
+
+
 class CustomCommand(Command):
     """setuptools command to build and copy the native (AOT) lib to the lib and dist dir"""
 
@@ -95,6 +129,11 @@ class CustomCommand(Command):
         # NOTE: we need the DLL here so we can properly link it
         import subprocess
 
+        # contrary to documentation, it appears that we have to explicitly set the RID
+        rid = "-".join((get_dotnet_os(), get_dotnet_arch()))
+        with open("SecretOfManaRandomizer/SoMRandomizer.api/SoMRandomizer.api.csproj.user", "w") as f:
+            f.write(f"<Project><PropertyGroup><RuntimeIdentifier>{rid}</RuntimeIdentifier></PropertyGroup></Project>")
+        # TODO: on macos, we want to build both x86_64 and arm64 and use lipo to get a universal2 dylib
         subprocess.run(
             "dotnet publish SecretOfManaRandomizer/SoMRandomizer.api/",
             shell=True,
