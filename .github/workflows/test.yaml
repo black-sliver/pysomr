@@ -43,4 +43,4 @@ jobs:
         dotnet-version: '10'
     - name: Build
       run: |
-        pip wheel .
+        pip wheel . -v
