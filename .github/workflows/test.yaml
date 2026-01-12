@@ -45,3 +45,7 @@ jobs:
     - name: Build
       run: |
         pip wheel . -v
+    - name: Test install wheel
+      run: |
+        pip install *.whl
+        python -c 'import pysomr; print(pysomr)'
