@@ -25,9 +25,8 @@ jobs:
             os: windows-latest
           - python: {version: '3.13'}  # current
             os: windows-latest
-          # macos disabled for now; needs code to generate universal2
-          #- python: {version: '3.13'}  # current
-          #  os: macos-latest
+          - python: {version: '3.13'}  # current
+            os: macos-latest
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
     steps:
