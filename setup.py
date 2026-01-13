@@ -31,7 +31,7 @@ from setuptools.command.build import build
 from setuptools.command.build_ext import build_ext
 
 
-__all__ = ["setup"]
+__all__ = ["CustomCommand", "get_dotnet_os", "get_dotnet_arch"]
 
 
 is_macos = platform.system() == "Darwin"
@@ -100,7 +100,7 @@ if is_macos:
                 libraries[tool][i] = lib[:-3] + ".dylib"
 
 
-def get_dotnet_os():
+def get_dotnet_os() -> str:
     system = platform.system()
     if system == "Windows":
         return "win"
@@ -117,7 +117,7 @@ def get_dotnet_os():
     return "unix"
 
 
-def get_dotnet_arch():
+def get_dotnet_arch() -> str:
     # FIXME: there has to be a better way?
     machine = platform.machine().lower()
     if machine in ("x86", "i386", "i586", "i686"):
@@ -153,7 +153,9 @@ class CustomCommand(Command):
             self.bdist_dir = Path(bdist.bdist_dir)
 
     @staticmethod
-    def dotnet_publish(rid: str) -> Path:
+    def dotnet_publish(rid: t.Optional[str] = None) -> Path:
+        if rid is None:
+            rid = "-".join((get_dotnet_os(), get_dotnet_arch()))
         if not rid.replace("-", "").isalnum():
             raise ValueError("Invalid rid")
 
@@ -162,13 +164,16 @@ class CustomCommand(Command):
         with open("SecretOfManaRandomizer/SoMRandomizer.api/SoMRandomizer.api.csproj.user", "w") as f:
             f.write(f"<Project><PropertyGroup><RuntimeIdentifier>{rid}</RuntimeIdentifier></PropertyGroup></Project>")
         dotnet = shutil.which("dotnet")
+        native_lib_src_name = f"SoMRandomizer.api{dll_ext}"
+        output = Path(f"SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native/{native_lib_src_name}")
+        if not dotnet and os.environ.get("CIBUILDWHEEL", None) and output.is_file():
+            return output
         assert dotnet, "dotnet not found"
         subprocess.run(
             [dotnet, "publish", "SecretOfManaRandomizer/SoMRandomizer.api/"],
             check=True,
         )
-        native_lib_src_name = f"SoMRandomizer.api{dll_ext}"
-        return Path(f"SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native/{native_lib_src_name}")
+        return output
 
     def dotnet_publish_universal2(self) -> Path:
         macos_build_dir = Path("build") / "macos"
@@ -194,8 +199,7 @@ class CustomCommand(Command):
         if is_macos:
             native_lib_src = self.dotnet_publish_universal2()
         else:
-            rid = "-".join((get_dotnet_os(), get_dotnet_arch()))
-            native_lib_src = self.dotnet_publish(rid)
+            native_lib_src = self.dotnet_publish()
         native_lib = native_lib_src.name
         print(f"copying {native_lib_src} -> {native_lib} ({os.path.getsize(native_lib_src)})")
         shutil.copy(native_lib_src, native_lib)
@@ -252,10 +256,11 @@ class CustomBuild(build):
     sub_commands = [("build_custom", None)] + build.sub_commands
 
 
-setup(
-    cmdclass={
-        "build": CustomBuild,
-        "build_ext": CustomBuildExt,
-        "build_custom": CustomCommand,
-    }
-)
+if __name__ == "__main__":
+    setup(
+        cmdclass={
+            "build": CustomBuild,
+            "build_ext": CustomBuildExt,
+            "build_custom": CustomCommand,
+        }
+    )

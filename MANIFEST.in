@@ -1,0 +1,5 @@
+graft SecretOfManaRandomizer
+global-exclude .git
+global-exclude .gitignore
+global-exclude pokedata3.xml
+prune SecretOfManaRandomizer/SoMRandomizer.gui

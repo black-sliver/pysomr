@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2025, windows-11-arm, macos-15]
+        os: [ubuntu-22.04, ubuntu-22.04-arm, windows-2025, windows-11-arm, macos-15]
         # cibw_python: ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
         # FIXME: do we need to set 'cibw_arch' to 'universal2' for macOS or is this the default now?
 
@@ -25,6 +25,14 @@ jobs:
       uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
       with:
         dotnet-version: '10'
+    - name: Set up Python
+      if: ${{ startsWith(matrix.os, 'ubuntu') }}
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+    - name: Prebuild native library
+      if: ${{ startsWith(matrix.os, 'ubuntu') }}
+      run: |
+        pip install setuptools==80.9.0
+        python -c 'from setup import CustomCommand; CustomCommand.dotnet_publish()'
     - name: Build wheels
       uses: pypa/cibuildwheel@298ed2fb2c105540f5ed055e8a6ad78d82dd3a7e
     - name: Store wheels
@@ -49,7 +57,7 @@ jobs:
     - name: Build source distribution
       run: python -m build . --sdist
     - name: Store source distribution
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       with:
         name: cibw-sdist
         path: dist/

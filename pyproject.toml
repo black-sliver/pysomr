@@ -23,6 +23,21 @@ ext-modules = [
   {name = "pysomr", sources = ["pysomr.pyx"]},
 ]
 
+[tool.cibuildwheel]
+# TODO: instead install dotnet10 inside the manylinux container
+manylinux-x86_64-image = "manylinux_2_34"
+manylinux-i686-image = "manylinux_2_34"
+manylinux-aarch64-image = "manylinux_2_34"
+manylinux-armv7l-image = "manylinux_2_34"
+# skip some targets (for now):
+# pypy we don't want to care about
+# musllinux requires us to install dotnet10 inside the container
+# win32 requires us to change how the symbols are exported from the native lib
+skip = ["pp*", "*-musllinux_*", "*-win32"]
+
+[tool.cibuildwheel.macos.environment]
+MACOSX_DEPLOYMENT_TARGET = "12.0"  # minimum for dotnet 10 AOT
+
 [tool.black]
 line-length = 120
 
