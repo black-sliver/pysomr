@@ -166,7 +166,8 @@ class CustomCommand(Command):
         dotnet = shutil.which("dotnet")
         native_lib_src_name = f"SoMRandomizer.api{dll_ext}"
         output = Path(f"SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native/{native_lib_src_name}")
-        if not dotnet and os.environ.get("CIBUILDWHEEL", None) and output.is_file():
+        if not dotnet and os.environ.get("CIBUILDWHEEL") and output.is_file():
+            # allow prebuilding the AOT lib for cibw
             return output
         assert dotnet, "dotnet not found"
         subprocess.run(
