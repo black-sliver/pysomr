@@ -126,7 +126,7 @@ def get_dotnet_arch():
         if sys.maxsize > 2**32:
             return "x64"
         return "x86"
-    if machine.startswith("arm64"):
+    if machine in ("arm64", "aarch64"):
         return "arm64"
     if machine.startswith("arm"):
         return "arm"
