@@ -45,6 +45,7 @@ jobs:
       run: |
         pip wheel . -v
     - name: Test install wheel
+      shell: bash
       run: |
         pip install *.whl
         python -c 'import pysomr; print(pysomr)'
