@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2025, windows-11-arm, macos-15]
+        # cibw_python: ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
+        # FIXME: do we need to set 'cibw_arch' to 'universal2' for macOS or is this the default now?
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      with:
+        submodules: 'recursive'
+        persist-credentials: false
+    - name: Set up dotnet
+      uses: actions/setup-dotnet@2016bd2012dba4e32de620c46fe006a3ac9f0602
+      with:
+        dotnet-version: '10'
+    - name: Build wheels
+      uses: pypa/cibuildwheel@298ed2fb2c105540f5ed055e8a6ad78d82dd3a7e
+    - name: Store wheels
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      with:
+        name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
+        path: ./wheelhouse/*.whl
+
+
+  build_sdist:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      with:
+        submodules: 'recursive'
+
+    - name: Set up Python
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+    - name: Install requirements
+      run: python -m pip install -U pip build
+    - name: Build source distribution
+      run: python -m build . --sdist
+    - name: Store source distribution
+      uses: actions/upload-artifact@v4
+      with:
+        name: cibw-sdist
+        path: dist/
