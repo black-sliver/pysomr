@@ -161,8 +161,15 @@ class CustomCommand(Command):
 
         # contrary to documentation, it appears that we have to explicitly set the RID even for "native"
         # also supplying -r <rid> fails for whatever reason
+        prop_dict = {
+            "RuntimeIdentifier": rid,
+            "OptimizationPreference": "Size",
+            "InvariantGlobalization": "true",
+            "UseSizeOptimizedLinq": "true",
+        }
         with open("SecretOfManaRandomizer/SoMRandomizer.api/SoMRandomizer.api.csproj.user", "w") as f:
-            f.write(f"<Project><PropertyGroup><RuntimeIdentifier>{rid}</RuntimeIdentifier></PropertyGroup></Project>")
+            props = "".join(f"<{key}>{value}</{key}>" for key, value in prop_dict.items())
+            f.write(f"<Project><PropertyGroup>{props}</PropertyGroup></Project>")
         dotnet = shutil.which("dotnet")
         native_lib_src_name = f"SoMRandomizer.api{dll_ext}"
         output = Path(f"SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native/{native_lib_src_name}")
