@@ -173,8 +173,9 @@ class CustomCommand(Command):
         dotnet = shutil.which("dotnet")
         native_lib_src_name = f"SoMRandomizer.api{dll_ext}"
         output = Path(f"SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native/{native_lib_src_name}")
-        if not dotnet and os.environ.get("CIBUILDWHEEL") and output.is_file():
-            # allow prebuilding the AOT lib for cibw
+        if os.environ.get("CIBUILDWHEEL"):
+            # expect prebuilding the AOT lib for cibw
+            print("Using prebuilt native lib")
             return output
         assert dotnet, "dotnet not found"
         subprocess.run(
@@ -188,19 +189,30 @@ class CustomCommand(Command):
         macos_build_dir = Path("build") / "macos"
         macos_build_dir.mkdir(parents=True, exist_ok=True)
         dotnet_os = get_dotnet_os()
+        # build for arm or get prebuilt name
         arm64_src = cls.dotnet_publish(f"{dotnet_os}-arm64")
         arm64_lib = macos_build_dir / Path(arm64_src).name.replace(".dylib", ".arm64.dylib")
+        # construct final name
+        universal_lib = macos_build_dir / Path(arm64_src).name
+        if os.environ.get("CIBUILDWHEEL"):
+            # expect prebuilding the AOT lib for cibw
+            print("Using prebuilt universal2 lib")
+            return universal_lib
+        # move arm build to temp folder
         shutil.move(arm64_src, arm64_lib)
+        # build for intel
         x64_src = cls.dotnet_publish(f"{dotnet_os}-x64")
         x64_lib = macos_build_dir / Path(arm64_src).name.replace(".dylib", ".x64.dylib")
+        # move intel build to temp folder
         shutil.move(x64_src, x64_lib)
-        universal_lib = macos_build_dir / Path(x64_src).name
+        # combine the two builds into universal2
         lipo = shutil.which("lipo")
         assert lipo, "lipo not found"
         subprocess.run(
             [lipo, "-output", str(universal_lib), "-create", str(arm64_lib), str(x64_lib)],
             check=True,
         )
+        # return final name
         return universal_lib
 
     def run(self) -> None:
