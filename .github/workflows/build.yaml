@@ -1,0 +1,209 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_aot:
+    # NOTE: dotnet 10 minimum glibc is 2.27 on x86_64 and arm64
+    #       dotnet 10 minimum glibc is 2.36 on arm 32bit, but we currently don't build those
+    name: Build AOT lib for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            container: quay.io/pypa/manylinux_2_28_x86_64
+            py: '/opt/python/cp313-cp313/bin/python'
+          - os: ubuntu-24.04-arm
+            container: quay.io/pypa/manylinux_2_28_aarch64
+            py: '/opt/python/cp313-cp313/bin/python'
+          - os: windows-2025
+            py: 'python'
+          - os: windows-11-arm
+            py: 'python'
+          - os: macos-15
+            py: 'python'
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+    # NOTE we need to use old versions of some actions because of available node
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+        persist-credentials: false
+    - name: Set up dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10'
+    - name: Install dependencies (dnf)
+      if: ${{ runner.os == 'Linux' }}
+      run: dnf install icu -y
+    - name: Print package info
+      if: ${{ runner.os == 'Linux' }}
+      run: yum info icu
+    - name: Set up Python (if needed)
+      if: ${{ runner.os != 'Linux' }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+    - name: Build native library
+      if: ${{ !startsWith(matrix.os, 'macos-') }}
+      shell: bash
+      run: |
+        "${{ matrix.py }}" -m pip install setuptools==80.9.0
+        "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish()'
+    - name: Build universal2 library
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      shell: bash
+      run: |
+        "${{ matrix.py }}" -m pip install setuptools==80.9.0
+        "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()'
+    - name: Store native library
+      if: ${{ !startsWith(matrix.os, 'macos-') }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: aot-${{ runner.os }}-${{ runner.arch }}
+        path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
+        retention-days: 2  # just needs to stay until build_wheels is done
+        compression-level: 9  # highly compressible
+        if-no-files-found: error
+    - name: Store universal2 library
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: aot-${{ runner.os }}-universal2
+        path: ./build
+        retention-days: 2  # just needs to stay until build_wheels is done
+        compression-level: 9  # highly compressible
+        if-no-files-found: error
+
+
+  build_wheels:
+    needs: build_aot
+    # NOTE: windows takes the longest for both AOT and CIBW, so there is no point in making `needs` more complex
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-22.04-arm, windows-2025, windows-11-arm, macos-15]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      with:
+        submodules: 'recursive'
+        persist-credentials: false
+    - name: Download prebuilt native library
+      if: ${{ !startsWith(matrix.os, 'macos-') }}
+      uses: actions/download-artifact@v4
+      with:
+        name: aot-${{ runner.os }}-${{ runner.arch }}
+        path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
+    - name: Download prebuilt universal2 library
+      if: ${{ startsWith(matrix.os, 'macos-') }}
+      uses: actions/download-artifact@v4
+      with:
+        name: aot-${{ runner.os }}-universal2
+        path: ./build
+    - name: Build wheels
+      uses: pypa/cibuildwheel@298ed2fb2c105540f5ed055e8a6ad78d82dd3a7e
+    - name: Print sha256
+      shell: bash
+      run: sha256sum ./wheelhouse/*.whl
+    - name: Store wheels
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      with:
+        name: cibw-wheels-${{ matrix.os }}_${{ strategy.job-index }}
+        path: ./wheelhouse/*.whl
+        compression-level: 0  # already compressed
+        if-no-files-found: error
+
+
+  test_wheels:
+    # for now, we just try to test-install and import the Linux Py3.13 one
+    needs: build_wheels
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      with:
+        python-version: '3.13'
+    - name: Download wheels
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      with:
+        pattern: cibw-wheels-ubuntu-22.04_*
+        merge-multiple: true
+    - name: Install wheel
+      shell: bash
+      run: |
+        pip install pysomr*-cp313-cp313-manylinux*.whl
+    - name: Simple test
+      shell: bash
+      run: |
+        python -c 'import pysomr; from pprint import pprint; pprint([item.name for item in pysomr.OW.get_all_items()])'
+
+
+  build_sdist:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      with:
+        submodules: 'recursive'
+    - name: Set up Python
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      with:
+        python-version: '3.13'
+    - name: Install requirements
+      run: python -m pip install -U pip build
+    - name: Build source distribution
+      run: python -m build . --sdist
+    - name: Print sha256
+      shell: bash
+      run: sha256sum ./dist/*
+    - name: Store source distribution
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      with:
+        name: cibw-sdist
+        path: dist/
+        compression-level: 0  # already compressed
+        if-no-files-found: error
+
+
+  test_sdist:
+    # for now, we just try to test-install and import the Linux Py3.13 one
+    needs: build_sdist
+    runs-on: ubuntu-latest
+
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      with:
+        python-version: '3.13'
+    - name: Set up dotnet
+      uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309
+      with:
+        dotnet-version: '10'
+    - name: Download source distribution
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      with:
+        name: cibw-sdist
+        path: dist/
+    - name: Install source distribution
+      shell: bash
+      run: |
+        pip install dist/*.tar.*
+    - name: Simple test
+      shell: bash
+      run: |
+        python -c 'import pysomr; from pprint import pprint; pprint([item.name for item in pysomr.OW.get_all_items()])'
