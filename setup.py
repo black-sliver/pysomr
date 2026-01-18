@@ -183,14 +183,15 @@ class CustomCommand(Command):
         )
         return output
 
-    def dotnet_publish_universal2(self) -> Path:
+    @classmethod
+    def dotnet_publish_universal2(cls) -> Path:
         macos_build_dir = Path("build") / "macos"
         macos_build_dir.mkdir(parents=True, exist_ok=True)
         dotnet_os = get_dotnet_os()
-        arm64_src = self.dotnet_publish(f"{dotnet_os}-arm64")
+        arm64_src = cls.dotnet_publish(f"{dotnet_os}-arm64")
         arm64_lib = macos_build_dir / Path(arm64_src).name.replace(".dylib", ".arm64.dylib")
         shutil.move(arm64_src, arm64_lib)
-        x64_src = self.dotnet_publish(f"{dotnet_os}-x64")
+        x64_src = cls.dotnet_publish(f"{dotnet_os}-x64")
         x64_lib = macos_build_dir / Path(arm64_src).name.replace(".dylib", ".x64.dylib")
         shutil.move(x64_src, x64_lib)
         universal_lib = macos_build_dir / Path(x64_src).name
