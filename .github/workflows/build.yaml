@@ -6,6 +6,9 @@ on:
       - 'v*.*.*'
     paths:
       - '.github/workflows/build.yaml'
+  pull_request:
+    paths:
+      - '.github/workflows/build.yaml'
   workflow_dispatch:
     inputs:
       test_pypi:
