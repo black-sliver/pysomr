@@ -108,13 +108,13 @@ jobs:
         persist-credentials: false
     - name: Download prebuilt native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: aot-${{ runner.os }}-${{ runner.arch }}
         path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
     - name: Download prebuilt universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         name: aot-${{ runner.os }}-universal2
         path: ./build
