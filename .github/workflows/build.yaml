@@ -207,3 +207,35 @@ jobs:
       shell: bash
       run: |
         python -c 'import pysomr; from pprint import pprint; pprint([item.name for item in pysomr.OW.get_all_items()])'
+
+
+  publish_testpypi:
+    name: Publish to TestPyPI
+    needs:
+    - build_sdist
+    - build_wheels
+    - test_sdist
+    - test_wheels
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/pysomr
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      with:
+        pattern: cibw-*
+        merge-multiple: true
+        path: dist/
+    - name: Print sha256
+      run: |
+        sha256sum dist/*
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
