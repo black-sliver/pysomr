@@ -50,7 +50,7 @@ jobs:
         submodules: 'recursive'
         persist-credentials: false
     - name: Set up dotnet
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10'
     - name: Install dependencies (dnf)
