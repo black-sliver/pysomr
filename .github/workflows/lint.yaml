@@ -1,0 +1,36 @@
+name: Lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+      with:
+        submodules: 'recursive'
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
+      with:
+        python-version: '3.13'
+    - name: Install requirements
+      run: pip install -r linter_requirements.txt
+    - name: cython-lint
+      run: cython-lint .
+    - name: black
+      if: always()
+      run: black --check --diff --color .
+    - name: mypy
+      if: always()
+      run: mypy --strict *.py src examples
+    - name: flake8 + bandit
+      if: always()
+      run: flake8 *.py src examples
+    - name: codespell
+      if: always()
+      run: codespell
