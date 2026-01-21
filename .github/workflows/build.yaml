@@ -134,6 +134,7 @@ jobs:
 
   test_wheels:
     # for now, we just try to test-install and import the Linux Py3.13 one
+    # actual testing should be done in the build step
     needs: build_wheels
     runs-on: ubuntu-latest
 
@@ -186,7 +187,8 @@ jobs:
 
 
   test_sdist:
-    # for now, we just try to test-install and import the Linux Py3.13 one
+    # for now, we just try to test-install and import the Linux Py3.13 one to see if sdist is complete
+    # actual testing should be done in the build step
     needs: build_sdist
     runs-on: ubuntu-latest
 
