@@ -36,6 +36,15 @@ MACOSX_DEPLOYMENT_TARGET = "12.0"  # minimum for dotnet 10 AOT
 [tool.black]
 line-length = 120
 
+[tool.cython-lint]
+max-line-length = 120
+
+[tool.flake8]
+max-line-length = 120
+ignore = [
+  'S101',  # asserts are only used to get nicer errors
+]
+
 [tool.codespell]
 skip = './.git,./build,./SecretOfManaRandomizer,./*.egg-info'
 ignore-words = ".codespellignore"

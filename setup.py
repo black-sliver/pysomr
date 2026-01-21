@@ -21,7 +21,7 @@ import os
 import os.path
 import platform
 import shutil
-import subprocess
+import subprocess  # noqa: S404: no other way to run dotnet publish
 import sys
 import typing as t
 from pathlib import Path
@@ -178,7 +178,7 @@ class CustomCommand(Command):
             print("Using prebuilt native lib")
             return output
         assert dotnet, "dotnet not found"
-        subprocess.run(
+        subprocess.run(  # noqa: S603: no other way to run dotnet publish
             [dotnet, "publish", "SecretOfManaRandomizer/SoMRandomizer.api/"],
             check=True,
         )
@@ -208,7 +208,7 @@ class CustomCommand(Command):
         # combine the two builds into universal2
         lipo = shutil.which("lipo")
         assert lipo, "lipo not found"
-        subprocess.run(
+        subprocess.run(  # noqa: S603: no other way to run dotnet publish
             [lipo, "-output", str(universal_lib), "-create", str(arm64_lib), str(x64_lib)],
             check=True,
         )

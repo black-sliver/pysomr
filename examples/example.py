@@ -24,7 +24,7 @@ def test() -> None:
     for location in OW.get_all_locations():
         print(f"{location.id}: {location.name}")
     ow = OW(
-        "/tmp/som.smc",
+        "path/to/som.smc",
         "1",
         {
             # no magic:
@@ -64,7 +64,7 @@ def test() -> None:
     print(f"girl weapon:     {girl_start_weapon}")
     print(f"sprite weapon:   {sprite_start_weapon}")
 
-    ow.run("/tmp/somr.smc")
+    ow.run("path/to/somr.smc")
 
 
 if __name__ == "__main__":

@@ -11,9 +11,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
 
-#cython: language_level=3
-#distutils: language = c
-#distutils: depends = SecretOfManaRandomizer/SoMRandomizer.api/c/api.h
+# cython: language_level=3
+# distutils: language = c
+# distutils: depends = SecretOfManaRandomizer/SoMRandomizer.api/c/api.h
 
 # NOTE: cython support in IDEs is not great, specifically tracking cdef types,
 #       so we add a bunch of "no inspection" markers everywhere
@@ -26,7 +26,7 @@ from libc.stdint cimport uint_least16_t, int32_t, uint8_t
 
 
 ctypedef uint_least16_t char16_t
-"""Strings are "windows wide char*" that is pointers to 16bit characters encoded in "windows unicode" (UCS2/WTF16)"""
+# """Strings are "windows wide char*" that is pointers to 16bit characters encoded in "Windows Unicode" (UCS2/WTF16)"""
 
 
 cdef extern from *:
@@ -200,7 +200,7 @@ cdef bytes str_to_ucs2(str data):
 
 @cython.auto_pickle(False)
 cdef class Item:
-    cdef SoMR_Item* _handle;
+    cdef SoMR_Item* _handle
 
     @staticmethod
     cdef Item from_handle(SoMR_Item* handle):
@@ -240,7 +240,7 @@ cdef class Item:
 
 @cython.auto_pickle(False)
 cdef class Location:
-    cdef SoMR_Location* _handle;
+    cdef SoMR_Location* _handle
 
     @staticmethod
     cdef Location from_handle(SoMR_Location* handle):
@@ -288,7 +288,7 @@ cdef class Location:
 
 @cython.auto_pickle(False)
 cdef class ItemList:
-    cdef SoMR_ItemList* _handle;
+    cdef SoMR_ItemList* _handle
 
     @staticmethod
     cdef ItemList from_handle(SoMR_ItemList* handle):
@@ -309,7 +309,7 @@ cdef class ItemList:
 
 @cython.auto_pickle(False)
 cdef class LocationList:
-    cdef SoMR_LocationList* _handle;
+    cdef SoMR_LocationList* _handle
 
     @staticmethod
     cdef LocationList from_handle(SoMR_LocationList* handle):
@@ -330,7 +330,7 @@ cdef class LocationList:
 
 @cython.auto_pickle(False)
 cdef class StrList:
-    cdef SoMR_StrList* _handle;
+    cdef SoMR_StrList* _handle
 
     @staticmethod
     cdef StrList from_handle(SoMR_StrList* handle):
@@ -356,7 +356,7 @@ cdef class StrList:
 
 @cython.auto_pickle(False)
 cdef class OWSettings:
-    cdef SoMR_OWSettings* _handle;
+    cdef SoMR_OWSettings* _handle
 
     @staticmethod
     cdef OWSettings from_handle(SoMR_OWSettings* handle):
@@ -390,7 +390,7 @@ cdef class OWSettings:
 
 @cython.auto_pickle(False)
 cdef class OWGenerator:
-    cdef SoMR_OWGenerator* _handle;
+    cdef SoMR_OWGenerator* _handle
 
     @staticmethod
     cdef OWGenerator from_handle(SoMR_OWGenerator* handle):
@@ -454,7 +454,7 @@ cdef class Context:
 
 @cython.auto_pickle(False)
 cdef class WorkingData:
-    cdef SoMR_WorkingData* _handle;
+    cdef SoMR_WorkingData* _handle
 
     @staticmethod
     cdef WorkingData from_handle(SoMR_WorkingData* handle):
@@ -477,7 +477,7 @@ cdef class WorkingData:
         # TODO: make keys opaque and cache in .net land?
         # noinspection PyTypeChecker
         key_bytes = str_to_ucs2(item)
-        cdef unsigned char* key_ptr = key_bytes;
+        cdef unsigned char* key_ptr = key_bytes
         val_ucs2 = SoMR_WorkingData_GetStr(self._handle, <char16_t*>key_ptr)
         try:
             # noinspection PyTypeChecker
@@ -493,7 +493,6 @@ cdef class WorkingData:
         value_bytes = str_to_ucs2(value)
         cdef unsigned char* value_ptr = value_bytes
         SoMR_WorkingData_SetStr(self._handle, <char16_t*>key_ptr, <char16_t*>value_ptr)
-
 
     def get_bool(self, item: str) -> bool:
         s = self[item]

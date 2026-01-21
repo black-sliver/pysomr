@@ -1,0 +1,10 @@
+bandit == 1.9.3
+black == 26.1.0
+codespell == 2.4.1
+cython == 3.2.4
+cython-lint == 0.18.1
+flake8 == 7.3.0
+flake8-bandit == 4.1.1
+flake8-pyproject == 1.2.4
+mypy == 1.19.1
+types-setuptools == 80.9.0.20251223
