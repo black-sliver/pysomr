@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      build-tools:
+        patterns:
+          - "setuptools"
+          - "types-setuptools"
+      build-dependencies:
+        patterns:
+          - "cython"
+      linters:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "setuptools"
+          - "types-setuptools"
+          - "cython"
