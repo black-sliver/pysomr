@@ -30,7 +30,6 @@ from setuptools import Command, setup
 from setuptools.command.build import build
 from setuptools.command.build_ext import build_ext
 
-
 __all__ = ["CustomCommand", "get_dotnet_os", "get_dotnet_arch"]
 
 

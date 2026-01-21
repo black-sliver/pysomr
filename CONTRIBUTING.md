@@ -26,6 +26,8 @@ flake8 *.py src examples
 codespell
 ```
 
+Note: all those things are also checked in CI.
+
 ### Clean up the venv
 
 ```shell
