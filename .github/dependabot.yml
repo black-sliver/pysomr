@@ -1,9 +1,16 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
+    # NOTE: some of the actions need to run old versions because of node compatibility.
+    #       Do not blindly merge dependabot PRs until we test build.yaml on PR!
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      artifacts:
+        patterns:
+          - "upload-artifact"
+          - "download-artifact"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
