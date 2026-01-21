@@ -34,8 +34,8 @@ ext-modules = [
 skip = ["*-musllinux_*", "*-win32"]
 # TODO: ship and run actual tests
 test-command = [
-  "python -c 'import pysomr; assert any(item.id == 44 for item in pysomr.OW.get_all_items())'",
-  "python -c 'import pysomr; assert any(location.id == 6 for location in pysomr.OW.get_all_locations())'",
+  'python -c "import pysomr; assert any(item.id == 44 for item in pysomr.OW.get_all_items())"',
+  'python -c "import pysomr; assert any(location.id == 6 for location in pysomr.OW.get_all_locations())"',
 ]
 
 [tool.cibuildwheel.macos]
