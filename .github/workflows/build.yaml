@@ -65,7 +65,7 @@ jobs:
         "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()'
     - name: Store native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: aot-${{ runner.os }}-${{ runner.arch }}
         path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
@@ -74,7 +74,7 @@ jobs:
         if-no-files-found: error
     - name: Store universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: aot-${{ runner.os }}-universal2
         path: ./build
