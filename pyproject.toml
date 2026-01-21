@@ -32,19 +32,17 @@ ext-modules = [
 # musllinux requires us to install dotnet10 inside a musl container
 # win32 requires us to change how the symbols are exported from the native lib
 skip = ["*-musllinux_*", "*-win32"]
+# TODO: ship and run actual tests
+test-command = [
+  "python -c 'import pysomr; assert any(item.id == 44 for item in pysomr.OW.get_all_items())'",
+  "python -c 'import pysomr; assert any(location.id == 6 for location in pysomr.OW.get_all_locations())'",
+]
 
 [tool.cibuildwheel.macos]
 archs = ["universal2", "arm64"]
 
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "12.0"  # minimum for dotnet 10 AOT
-
-[tool.cibuildwheel]
-# TODO: ship and run actual tests
-test-command = [
-  "python -c 'import pysomr; assert any(item.id == 44 for item in pysomr.OW.get_all_items())'",
-  "python -c 'import pysomr; assert any(location.id == 6 for location in pysomr.OW.get_all_locations())'",
-]
 
 [tool.black]
 line-length = 120
