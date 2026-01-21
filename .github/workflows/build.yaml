@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - 'v*.*.*'
+    paths:
+      - '.github/workflows/build.yaml'
   workflow_dispatch:
     inputs:
       test_pypi:
