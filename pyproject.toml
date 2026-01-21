@@ -33,6 +33,9 @@ ext-modules = [
 # win32 requires us to change how the symbols are exported from the native lib
 skip = ["*-musllinux_*", "*-win32"]
 
+[tool.cibuildwheel.macos]
+archs = ["universal2", "arm64"]
+
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "12.0"  # minimum for dotnet 10 AOT
 
