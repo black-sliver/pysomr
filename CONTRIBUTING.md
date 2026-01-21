@@ -12,3 +12,23 @@ If you open a PR, please consider allowing me to switch licenses in the future b
 
 Other parts of the software stack may be EPL2 or a newer version of (L)GPL and if an opportunity to merge or move code
 between parts arises, I would like to be able to.
+
+## Running Linters
+
+We use black for auto-formatting, mypy for type checking and codespell to find typos.
+See pyproject.toml for tool configuration. Install and run everything with
+```shell
+pip install -r linter_requirements.txt > /dev/null
+cython-lint .
+black .
+mypy --strict *.py src examples
+flake8 *.py src examples
+codespell
+```
+
+### Clean up the venv
+
+```shell
+# if you've run `pip install .`
+rm -R .venv/lib/*/site-packages/pysomr*
+```
