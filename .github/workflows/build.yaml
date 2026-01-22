@@ -64,18 +64,17 @@ jobs:
       uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
       with:
         python-version: '3.13'
+    - name: Install requirements
+      shell: bash
+      run: "${{ matrix.py }}" -m pip install -U pip -r prebuild_requirements.txt
     - name: Build native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
       shell: bash
-      run: |
-        "${{ matrix.py }}" -m pip install setuptools==80.9.0
-        "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish()'
+      run: "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish()'
     - name: Build universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
       shell: bash
-      run: |
-        "${{ matrix.py }}" -m pip install setuptools==80.9.0
-        "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()'
+      run: "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()'
     - name: Store native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
       uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
