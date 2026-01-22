@@ -58,4 +58,4 @@ jobs:
       shell: bash
       run: |
         pip install *.whl
-        python -c 'import pysomr; print(pysomr)'
+        python -c "import pysomr; print(pysomr)"

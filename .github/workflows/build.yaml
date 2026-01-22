@@ -66,15 +66,18 @@ jobs:
         python-version: '3.13'
     - name: Install requirements
       shell: bash
-      run: "${{ matrix.py }}" -m pip install -U pip -r prebuild_requirements.txt
+      run: |
+        "${{ matrix.py }}" -m pip install -U pip -r prebuild_requirements.txt
     - name: Build native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
       shell: bash
-      run: "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish()'
+      run: |
+        "${{ matrix.py }}" -c "from setup import CustomCommand; CustomCommand.dotnet_publish()"
     - name: Build universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
       shell: bash
-      run: "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()'
+      run: |
+        "${{ matrix.py }}" -c "from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()"
     - name: Store native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
       uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
@@ -159,7 +162,7 @@ jobs:
     - name: Simple test
       shell: bash
       run: |
-        python -c 'import pysomr; from pprint import pprint; pprint([item.name for item in pysomr.OW.get_all_items()])'
+        python -c "import pysomr; from pprint import pprint; pprint([item.name for item in pysomr.OW.get_all_items()])"
 
 
   build_sdist:
@@ -220,7 +223,7 @@ jobs:
     - name: Simple test
       shell: bash
       run: |
-        python -c 'import pysomr; from pprint import pprint; pprint([item.name for item in pysomr.OW.get_all_items()])'
+        python -c "import pysomr; from pprint import pprint; pprint([item.name for item in pysomr.OW.get_all_items()])"
 
 
   publish_pypi:
