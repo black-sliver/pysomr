@@ -20,6 +20,7 @@ jobs:
   build_aot:
     # NOTE: dotnet 10 minimum glibc is 2.27 on x86_64 and arm64
     #       dotnet 10 minimum glibc is 2.36 on arm 32bit, but we currently don't build those
+    #       Node.js 24 minimum glibc is 2.28 on x86_64 and arm64, arm 32bit not supported anymore
     name: Build AOT lib for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
@@ -43,14 +44,13 @@ jobs:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
     steps:
-    # NOTE we need to use old versions of some actions because of available node
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
       with:
         submodules: 'recursive'
         persist-credentials: false
     - name: Set up dotnet
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309
       with:
         dotnet-version: '10'
     - name: Install dependencies (dnf)
@@ -61,7 +61,7 @@ jobs:
       run: yum info icu
     - name: Set up Python (if needed)
       if: ${{ runner.os != 'Linux' }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548
       with:
         python-version: '3.13'
     - name: Build native library
@@ -78,7 +78,7 @@ jobs:
         "${{ matrix.py }}" -c 'from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()'
     - name: Store native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       with:
         name: aot-${{ runner.os }}-${{ runner.arch }}
         path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
@@ -87,7 +87,7 @@ jobs:
         if-no-files-found: error
     - name: Store universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
       with:
         name: aot-${{ runner.os }}-universal2
         path: ./build
@@ -113,13 +113,13 @@ jobs:
         persist-credentials: false
     - name: Download prebuilt native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
       with:
         name: aot-${{ runner.os }}-${{ runner.arch }}
         path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
     - name: Download prebuilt universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
       with:
         name: aot-${{ runner.os }}-universal2
         path: ./build
