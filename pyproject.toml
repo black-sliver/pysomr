@@ -1,6 +1,6 @@
 [project]
 name = "pysomr"
-version = "1.48.0a1"
+version = "1.48.0a2"
 requires-python = ">=3.10"
 authors = [
   {name = "black-sliver"},

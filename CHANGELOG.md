@@ -1,6 +1,6 @@
 # Changelog
 
-### next
+### v1.48.0a2
 
 * SoMRandomizer: update
   * Core: fix using embedded resources (actually generating output was broken in v1.48.0a1)
