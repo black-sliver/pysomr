@@ -164,7 +164,9 @@ class CustomCommand(Command):
             "RuntimeIdentifier": rid,
             "OptimizationPreference": "Size",
             "InvariantGlobalization": "true",
+            # NOTE: enabling "InvariantTimezone" would print all times as UTC to logs, so not doing that for now
             "UseSizeOptimizedLinq": "true",
+            "DynamicCodeSupport": "false",  # should be full AOT
         }
         with open("SecretOfManaRandomizer/SoMRandomizer.api/SoMRandomizer.api.csproj.user", "w") as f:
             props = "".join(f"<{key}>{value}</{key}>" for key, value in prop_dict.items())
