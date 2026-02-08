@@ -5,6 +5,9 @@ requires-python = ">=3.10"
 authors = [
   {name = "black-sliver"},
 ]
+maintainers = [
+  {name = "black-sliver"},
+]
 description = "Python Wrapper for SoMR API"
 readme = "README.md"
 license = "LGPL-2.1-or-later"
@@ -15,7 +18,10 @@ classifiers = [
 ]
 
 [project.urls]
+Homepage = "https://github.com/black-sliver/pysomr"
 Repository = "https://github.com/black-sliver/pysomr.git"
+Issues = "https://github.com/black-sliver/pysomr/issues"
+Changelog = "https://github.com/black-sliver/pysomr/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["setuptools == 80.10.2", "cython == 3.2.4"]
