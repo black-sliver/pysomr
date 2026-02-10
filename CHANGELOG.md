@@ -1,5 +1,14 @@
 # Changelog
 
+### v1.48.0a3
+
+* SoMRandomizer: update
+  * Disable autosave at start screen (loading the save would have broken flags)
+  * Use consistent format for date/time
+  * Improve LZ77 performance
+  * Improve performance by skipping string operations for debug output if debug output is disabled
+  * Fix warning and unlikely gen crash due to wrong precalculated code length
+
 ### v1.48.0a2
 
 * SoMRandomizer: update
