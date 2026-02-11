@@ -24,7 +24,7 @@ Issues = "https://github.com/black-sliver/pysomr/issues"
 Changelog = "https://github.com/black-sliver/pysomr/blob/main/CHANGELOG.md"
 
 [build-system]
-requires = ["setuptools == 80.10.2", "cython == 3.2.4"]
+requires = ["setuptools == 82.0.0", "cython == 3.2.4"]
 build-backend = 'setuptools.build_meta'
 
 [tool.setuptools]
