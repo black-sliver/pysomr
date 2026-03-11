@@ -115,13 +115,13 @@ jobs:
         persist-credentials: false
     - name: Download prebuilt native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         name: aot-${{ runner.os }}-${{ runner.arch }}
         path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
     - name: Download prebuilt universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         name: aot-${{ runner.os }}-universal2
         path: ./build
@@ -151,7 +151,7 @@ jobs:
       with:
         python-version: '3.13'
     - name: Download wheels
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         pattern: cibw-wheels-ubuntu-22.04_*
         merge-multiple: true
@@ -212,7 +212,7 @@ jobs:
       with:
         dotnet-version: '10'
     - name: Download source distribution
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         name: cibw-sdist
         path: dist/
@@ -245,7 +245,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         pattern: cibw-*
         merge-multiple: true
@@ -276,7 +276,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
       with:
         pattern: cibw-*
         merge-multiple: true
