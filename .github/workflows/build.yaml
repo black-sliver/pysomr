@@ -126,7 +126,7 @@ jobs:
         name: aot-${{ runner.os }}-universal2
         path: ./build
     - name: Build wheels
-      uses: pypa/cibuildwheel@298ed2fb2c105540f5ed055e8a6ad78d82dd3a7e
+      uses: pypa/cibuildwheel@8d2b08b68458a16aeb24b64e68a09ab1c8e82084
     - name: Print sha256
       shell: bash
       run: sha256sum ./wheelhouse/*.whl
