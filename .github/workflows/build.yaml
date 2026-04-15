@@ -80,7 +80,7 @@ jobs:
         "${{ matrix.py }}" -c "from setup import CustomCommand; CustomCommand.dotnet_publish_universal2()"
     - name: Store native library
       if: ${{ !startsWith(matrix.os, 'macos-') }}
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
       with:
         name: aot-${{ runner.os }}-${{ runner.arch }}
         path: ./SecretOfManaRandomizer/SoMRandomizer.api/bin/Release/net10.0/native
@@ -89,7 +89,7 @@ jobs:
         if-no-files-found: error
     - name: Store universal2 library
       if: ${{ startsWith(matrix.os, 'macos-') }}
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
       with:
         name: aot-${{ runner.os }}-universal2
         path: ./build
@@ -131,7 +131,7 @@ jobs:
       shell: bash
       run: sha256sum ./wheelhouse/*.whl
     - name: Store wheels
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
       with:
         name: cibw-wheels-${{ matrix.os }}_${{ strategy.job-index }}
         path: ./wheelhouse/*.whl
@@ -185,7 +185,7 @@ jobs:
       shell: bash
       run: sha256sum ./dist/*
     - name: Store source distribution
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
       with:
         name: cibw-sdist
         path: dist/
